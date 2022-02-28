@@ -4,8 +4,8 @@ const socketio = require("socket.io");
 const cron = require("node-cron");
 const roomDeleteCron = require("./cron/roomDeleteCron");
 require("./db/mongoose");
-require("dotenv").config();
 const chatRoomRouter = require("./routers/chatRoomRouter");
+const { notFound, errorHandler } = require("./middlewares/errorMiddleware");
 
 const app = express();
 const server = http.createServer(app);
@@ -16,18 +16,10 @@ app.use(express.json());
 
 app.use("/room", chatRoomRouter);
 
-app.get("/", (req, res) => {
-  res.send("chatROOM app is running");
-});
-
-app.use("*", (req, res) => {
-  return res.status(404).json({
-    success: false,
-    message: "API endpoint doesnt exist",
-  });
-});
+app.use(notFound);
+app.use(errorHandler);
 
 const job = cron.schedule("* * * * Sunday", roomDeleteCron);
 server.listen(port, () => {
-  console.log(`server is up on port ${port}`);
+    console.log(`server is up on port ${port}`);
 });
