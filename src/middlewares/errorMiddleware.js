@@ -4,7 +4,6 @@ const notFound = (req, res, next) => {
     next(error);
 };
 const errorHandler = (err, req, res, next) => {
-    console.log("Erroe");
     const statusCode = res.statusCode == 200 ? 500 : res.statusCode;
     res.status(statusCode);
     res.json({

@@ -4,7 +4,7 @@ const chatRoom = require("../models/chatRoomModel");
 
 const router = new express.Router();
 
-router.post("/create", async (req, res) => {
+router.post("/create", async (req, res, next) => {
     var cryptoId = crypto.randomBytes(5).toString("hex");
     const roomId = cryptoId.slice(0, 3) + "-" + cryptoId.slice(3, 7) + "-" + cryptoId.slice(7);
     const videoUrls = [];
@@ -19,35 +19,19 @@ router.post("/create", async (req, res) => {
         await chatroom.save();
         res.status(201).send({ roomId: chatroom.roomId });
     } catch (e) {
-        throw new Error(`Unable to create room with id: ${roomId}`);
-    }
-});
-/**
- * verity whether a RoomId exist or not,
- */
-router.get("/verify", async (req, res) => {
-    try {
-        const roomId = req.query.roomId;
-        const room = await chatRoom.findOne({
-            roomId,
-        });
-        if (!room) {
-            return res.status(403).send({ message: "Invalid RoomId" });
-        }
-        res.status(200).send({ message: "sucess" });
-    } catch (e) {
-        throw new Error("Invalid RoomId");
+        return next(new Error(`Unable to create room with id: ${roomId}`));
     }
 });
 
-router.post("/updatePlaylist", async (req, res) => {
+router.post("/updateRoomInfo", async (req, res, next) => {
     try {
         const roomId = req.body.roomId;
         const room = await chatRoom.findOne({
             roomId,
         });
         if (!room) {
-            return res.status(404).send({ message: "Invalid RoomId" });
+            res.status(404);
+            return next(new Error("Room ID not found in our records."));
         }
         const playList = req.body.playList.map((url) => ({
             videoUrl: url,
@@ -55,23 +39,24 @@ router.post("/updatePlaylist", async (req, res) => {
         await chatRoom.findOneAndUpdate({ roomId: req.body.roomId }, { playList });
         res.status(200).send({ success: "true" });
     } catch (e) {
-        throw new Error(`Failed update playlist of room : ${req.body.roomId}`);
+        return next(new Error(`Failed update playlist of room : ${req.body.roomId}`));
     }
 });
 
-router.get("/getPlaylist", async (req, res) => {
+router.get("/getRoomInfo", async (req, res, next) => {
     try {
         const roomId = req.query.roomId;
         const room = await chatRoom.findOne({
             roomId,
         });
         if (!room) {
-            return res.status(404).send({ message: "Invalid RoomId" });
+            res.status(404);
+            return next(new Error("Room ID not found in our records."));
         }
         const playList = room.playList.map(({ videoUrl, _id }) => videoUrl);
-        res.status(200).send({ playList });
+        res.status(200).send({ roomId, playList });
     } catch (e) {
-        throw new Error(`Failed to retrieve playlist of room : ${req.query.roomId}`);
+        return next(new Error(`Failed to retrieve playlist of room : ${req.query.roomId}`));
     }
 });
 module.exports = router;
