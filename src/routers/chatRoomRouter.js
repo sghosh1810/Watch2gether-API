@@ -24,7 +24,7 @@ router.post("/create", async (req, res, next) => {
 });
 router.get("/verifyRoomInfo", async (req, res, next) => {
     try {
-        const roomId = req.body.roomId;
+        const roomId = req.query.roomId;
         const room = await chatRoom.findOne({
             roomId,
         });
