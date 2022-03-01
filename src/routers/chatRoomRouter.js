@@ -22,7 +22,7 @@ router.post("/create", async (req, res, next) => {
         return next(new Error(`Unable to create room with id: ${roomId}`));
     }
 });
-router.get("/verifyRoomInfo", async (req, res) => {
+router.get("/verifyRoomInfo", async (req, res, next) => {
     try {
         const roomId = req.body.roomId;
         const room = await chatRoom.findOne({
@@ -35,7 +35,7 @@ router.get("/verifyRoomInfo", async (req, res) => {
         res.send({ message: "Room ID found." });
     } catch (e) {
         res.status(500);
-        return next(new Error("Room ID not found in our records."));
+        return next(new Error("Server failed to parse room info."));
     }
 });
 router.post("/updateRoomInfo", async (req, res, next) => {
