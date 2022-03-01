@@ -22,7 +22,22 @@ router.post("/create", async (req, res, next) => {
         return next(new Error(`Unable to create room with id: ${roomId}`));
     }
 });
-
+router.get("/verifyRoomInfo", async (req, res) => {
+    try {
+        const roomId = req.body.roomId;
+        const room = await chatRoom.findOne({
+            roomId,
+        });
+        if (!room) {
+            res.status(404);
+            return next(new Error("Room ID not found in our records."));
+        }
+        res.send({ message: "Room ID found." });
+    } catch (e) {
+        res.status(500);
+        return next(new Error("Room ID not found in our records."));
+    }
+});
 router.post("/updateRoomInfo", async (req, res, next) => {
     try {
         const roomId = req.body.roomId;
@@ -37,9 +52,9 @@ router.post("/updateRoomInfo", async (req, res, next) => {
             videoUrl: url,
         }));
         await chatRoom.findOneAndUpdate({ roomId: req.body.roomId }, { playList });
-        res.status(200).send({ success: "true" });
+        res.status(204).send({ message: "Updated room info successfully." });
     } catch (e) {
-        return next(new Error(`Failed update playlist of room : ${req.body.roomId}`));
+        return next(new Error(`Failed to update playlist of room : ${req.body.roomId}`));
     }
 });
 
@@ -54,7 +69,7 @@ router.get("/getRoomInfo", async (req, res, next) => {
             return next(new Error("Room ID not found in our records."));
         }
         const playList = room.playList.map(({ videoUrl, _id }) => videoUrl);
-        res.status(200).send({ roomId, playList });
+        res.send({ roomId, playList });
     } catch (e) {
         return next(new Error(`Failed to retrieve playlist of room : ${req.query.roomId}`));
     }
