@@ -4,7 +4,7 @@ const chatRoom = require("../models/chatRoomModel");
 
 const router = new express.Router();
 
-router.post("/create", async (req, res, next) => {
+router.post("/createRoom", async (req, res, next) => {
     var cryptoId = crypto.randomBytes(5).toString("hex");
     const roomId = cryptoId.slice(0, 3) + "-" + cryptoId.slice(3, 7) + "-" + cryptoId.slice(7);
     const videoUrls = [];
@@ -22,7 +22,7 @@ router.post("/create", async (req, res, next) => {
         return next(new Error(`Unable to create room with id: ${roomId}`));
     }
 });
-router.get("/verifyRoomInfo", async (req, res, next) => {
+router.get("/verifyRoom", async (req, res, next) => {
     try {
         const roomId = req.query.roomId;
         const room = await chatRoom.findOne({
@@ -38,7 +38,7 @@ router.get("/verifyRoomInfo", async (req, res, next) => {
         return next(new Error("Server failed to parse room info."));
     }
 });
-router.post("/updateRoomInfo", async (req, res, next) => {
+router.post("/updateRoom", async (req, res, next) => {
     try {
         const roomId = req.body.roomId;
         const room = await chatRoom.findOne({
@@ -58,7 +58,7 @@ router.post("/updateRoomInfo", async (req, res, next) => {
     }
 });
 
-router.get("/getRoomInfo", async (req, res, next) => {
+router.get("/joinRoom", async (req, res, next) => {
     try {
         const roomId = req.query.roomId;
         const room = await chatRoom.findOne({
