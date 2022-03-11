@@ -12,6 +12,8 @@ require("./db/mongoose");
 
 const app = express();
 const server = http.createServer(app);
+const io = socketio(server);
+require("./socket/webSocket")(io);
 
 const port = process.env.port || 3000;
 
