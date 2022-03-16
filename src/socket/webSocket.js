@@ -19,10 +19,10 @@ const webSocket = (io) => {
                 },
                 playList,
                 peerList: [
-                    {
-                        socketId: socket.id,
-                        peerName: username,
-                    },
+                    // {
+                    //     socketId: socket.id,
+                    //     peerName: username,
+                    // },
                 ],
                 timestamp: new Date(),
             };
@@ -56,9 +56,7 @@ const webSocket = (io) => {
                     var data = roomInfo[roomId].playList;
                     break;
                 case "deleteVideo":
-                    let updatedPlayList = roomInfo[roomId].playList.filter(
-                        (videoUrl) => videoUrl !== param
-                    );
+                    let updatedPlayList = roomInfo[roomId].playList.filter((videoUrl) => videoUrl !== param);
                     roomInfo[roomId].playList = updatedPlayList;
                     var data = updatedPlayList;
                     break;
@@ -72,9 +70,7 @@ const webSocket = (io) => {
         socket.on("disconnect", () => {
             var roomId = socketToRoomMap[socket.id];
             if (roomInfo[roomId]) {
-                var newPeerList = roomInfo[roomId].peerList.filter(
-                    (item) => item.socketId !== socket.id
-                );
+                var newPeerList = roomInfo[roomId].peerList.filter((item) => item.socketId !== socket.id);
                 roomInfo[roomId].peerList = newPeerList;
                 io.to(roomId).emit("updatePeerList", roomInfo[roomId].peerList);
             }
