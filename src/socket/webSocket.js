@@ -7,7 +7,7 @@ const webSocket = (io) => {
             if (roomInfo.hasOwnProperty(roomId)) {
                 return socket.emit("error", "RoomId already exists");
             }
-            if (typeof videoUrl !== "undefined") {
+            if (typeof videoUrl !== "undefined" && videoUrl) {
                 var playList = [videoUrl];
             } else {
                 playList = [];
